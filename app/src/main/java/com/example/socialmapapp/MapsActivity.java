@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -63,7 +64,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Add a marker in Sydney and move the camera
         LatLng merced = new LatLng(37.3, -120.48333);
         mMap.addMarker(new MarkerOptions().position(merced).title("Marker in Merced"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(merced));
+
+        CameraUpdate center = CameraUpdateFactory.newLatLng( new LatLng (37.3,-120.48333));
+        CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+
+        mMap.moveCamera(center);
+        mMap.animateCamera(zoom);
 
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
