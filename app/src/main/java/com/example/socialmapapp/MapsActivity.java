@@ -46,6 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+
         mMap = googleMap;
         try {
             // Customise the styling of the base map using a JSON object defined
@@ -82,10 +83,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 // Write a message to the database
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("message");
+                DatabaseReference myRef = database.getReference("/");
 
-                myRef.setValue("Hello, World!");
-
+                myRef.child("/").push().setValue(point);
             }
         });
 
