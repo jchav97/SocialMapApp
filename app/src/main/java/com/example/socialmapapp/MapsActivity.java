@@ -1,5 +1,6 @@
 package com.example.socialmapapp;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.res.Resources;
@@ -21,6 +22,25 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.System.exit;
+
+class Marker{
+
+    public LatLng location;
+    public double latitude;
+    public double longitude;
+
+    public Marker(){
+    }
+    public Marker(double latitude, double longitude){
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.location = new LatLng(latitude,longitude);
+    }
+
+}
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -64,7 +84,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e("MapsActivity", "Can't find style. Error: ", e);
         }
 //////////////////////////////////////////////////////////////////////////////////////////////
-        
+        // Read from the database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("/");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+
+                for(DataSnapshot ds : dataSnapshot.getChildren())
+                {
+                    double latitude = ds.child("latitude").getValue(double.class);
+                    System.out.println(latitude);
+                    List<Double> list = new ArrayList<>();
+                    list.add(latitude);
+                    Double longitude = ds.child("longitude").getValue(Double.class);
+                    System.out.println(longitude);
+                    list.add(longitude);
+
+                   LatLng location = new LatLng(list.get(0), list.get(1));
+                   MarkerOptions marker = new MarkerOptions().position(
+                          new LatLng(location.latitude, location.longitude)).title("New Marker");
+                   mMap.addMarker(marker);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("data", "Failed to read value.", error.toException());
+            }
+        });
         ////////////////////////////////////////////////////////////////////////////////////
 
         // Add a marker in Merced and move the camera
