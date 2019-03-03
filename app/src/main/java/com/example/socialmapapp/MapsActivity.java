@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static java.lang.System.exit;
@@ -85,8 +87,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 //////////////////////////////////////////////////////////////////////////////////////////////
         // Read from the database
+        final HashMap<LatLng,String> map = new HashMap<LatLng,String>();
+        final HashMap<LatLng,com.google.android.gms.maps.model.Marker> markerMap = new HashMap<LatLng,com.google.android.gms.maps.model.Marker>();
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("/");
+        final DatabaseReference myRef = database.getReference("/");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -96,17 +101,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for(DataSnapshot ds : dataSnapshot.getChildren())
                 {
                     double latitude = ds.child("latitude").getValue(double.class);
-                    System.out.println(latitude);
                     List<Double> list = new ArrayList<>();
                     list.add(latitude);
                     Double longitude = ds.child("longitude").getValue(Double.class);
-                    System.out.println(longitude);
                     list.add(longitude);
 
                    LatLng location = new LatLng(list.get(0), list.get(1));
-                   MarkerOptions marker = new MarkerOptions().position(
-                          new LatLng(location.latitude, location.longitude)).title("New Marker");
-                   mMap.addMarker(marker);
+
+                   map.put(location,ds.getKey());
+
+                   com.google.android.gms.maps.model.Marker markerName = mMap.addMarker(new MarkerOptions().position(
+                            new LatLng(location.latitude, location.longitude)).title(myRef.getKey()));
+
+                   markerMap.put(location,markerName);
                 }
             }
 
@@ -132,15 +139,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onMapClick(LatLng point) {
 
-                MarkerOptions marker = new MarkerOptions().position(
-                        new LatLng(point.latitude, point.longitude)).title("New Marker");
-                mMap.addMarker(marker);
-
-                // Write a message to the database
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("/");
 
+                if( markerMap.containsKey(point))
+                {
+                    myRef.removeValue((DatabaseReference.CompletionListener) myRef.child(map.get(point)));
+                    markerMap.get(point).remove();
+                    System.out.println("TEST");
+                    map.remove(point);
+                    System.out.println("TEST");
+                }
                 myRef.child("/").push().setValue(point);
+
+                com.google.android.gms.maps.model.Marker markerName = mMap.addMarker(new MarkerOptions().position(
+                        new LatLng(point.latitude, point.longitude)).title(myRef.getKey()));
+
+                map.put(point, myRef.getKey());
+
+
+
+                // Write a message to the database
+
+
+
             }
             
         });
