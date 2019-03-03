@@ -14,8 +14,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -45,9 +48,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
-
         mMap = googleMap;
+
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
@@ -61,17 +63,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Resources.NotFoundException e) {
             Log.e("MapsActivity", "Can't find style. Error: ", e);
         }
+//////////////////////////////////////////////////////////////////////////////////////////////
+        
+        ////////////////////////////////////////////////////////////////////////////////////
 
-        // Add a marker in Sydney and move the camera
+        // Add a marker in Merced and move the camera
         LatLng merced = new LatLng(37.3, -120.48333);
         mMap.addMarker(new MarkerOptions().position(merced).title("Marker in Merced"));
-
         CameraUpdate center = CameraUpdateFactory.newLatLng( new LatLng (37.3,-120.48333));
         CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
-
         mMap.moveCamera(center);
         mMap.animateCamera(zoom);
 
+        /////////////////////////////////////////////////////////////////////////////////
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
             @Override
@@ -87,7 +91,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 myRef.child("/").push().setValue(point);
             }
+            
         });
-
+        /////////////////////////////////////////////////////////////////////////////////////
     }
 }
