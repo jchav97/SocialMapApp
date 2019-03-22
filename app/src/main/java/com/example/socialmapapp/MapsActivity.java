@@ -31,14 +31,10 @@ import static java.lang.System.exit;
 class Marker{
 
     public LatLng location;
-    public double latitude;
-    public double longitude;
 
     public Marker(){
     }
     public Marker(double latitude, double longitude){
-        this.latitude = latitude;
-        this.longitude = longitude;
         this.location = new LatLng(latitude,longitude);
     }
 
@@ -86,6 +82,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e("MapsActivity", "Can't find style. Error: ", e);
         }
 //////////////////////////////////////////////////////////////////////////////////////////////
+
+
         // Read from the database
         final HashMap<LatLng,String> map = new HashMap<LatLng,String>();
         final HashMap<LatLng,com.google.android.gms.maps.model.Marker> markerMap = new HashMap<LatLng,com.google.android.gms.maps.model.Marker>();
@@ -98,15 +96,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
 
+                mMap.clear();
                 for(DataSnapshot ds : dataSnapshot.getChildren())
                 {
-                    double latitude = ds.child("latitude").getValue(double.class);
-                    List<Double> list = new ArrayList<>();
-                    list.add(latitude);
-                    Double longitude = ds.child("longitude").getValue(Double.class);
-                    list.add(longitude);
 
-                   LatLng location = new LatLng(list.get(0), list.get(1));
+                   LatLng location = new LatLng(ds.child("latitude").getValue(double.class), ds.child("longitude").getValue(double.class));
 
                    map.put(location,ds.getKey());
 
@@ -123,6 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.w("data", "Failed to read value.", error.toException());
             }
         });
+
         ////////////////////////////////////////////////////////////////////////////////////
 
         // Add a marker in Merced and move the camera
@@ -142,27 +137,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("/");
 
-                if( markerMap.containsKey(point))
+                if( map.containsKey(point))
                 {
                     myRef.removeValue((DatabaseReference.CompletionListener) myRef.child(map.get(point)));
-                    markerMap.get(point).remove();
-                    System.out.println("TEST");
                     map.remove(point);
-                    System.out.println("TEST");
                 }
-                myRef.child("/").push().setValue(point);
-
-                com.google.android.gms.maps.model.Marker markerName = mMap.addMarker(new MarkerOptions().position(
-                        new LatLng(point.latitude, point.longitude)).title(myRef.getKey()));
-
-                map.put(point, myRef.getKey());
-
-
-
-                // Write a message to the database
-
-
-
+                else {
+                    myRef.child("/").push().setValue(point);
+                    map.put(point, myRef.getKey());
+                }
             }
             
         });
