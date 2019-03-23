@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -22,23 +23,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import static java.lang.System.exit;
 
-class Marker{
-
-    public LatLng location;
-
-    public Marker(){
-    }
-    public Marker(double latitude, double longitude){
-        this.location = new LatLng(latitude,longitude);
-    }
-
-}
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -86,7 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Read from the database
         final HashMap<LatLng,String> map = new HashMap<LatLng,String>();
-        final HashMap<LatLng,com.google.android.gms.maps.model.Marker> markerMap = new HashMap<LatLng,com.google.android.gms.maps.model.Marker>();
+        final HashMap<LatLng,Marker> markerMap = new HashMap<LatLng,Marker>();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("/");
@@ -104,8 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                    map.put(location,ds.getKey());
 
-                   com.google.android.gms.maps.model.Marker markerName = mMap.addMarker(new MarkerOptions().position(
-                            new LatLng(location.latitude, location.longitude)).title(myRef.getKey()));
+                   Marker markerName = mMap.addMarker(new MarkerOptions().position(location).title(myRef.getKey()));
 
                    markerMap.put(location,markerName);
                 }
@@ -137,18 +127,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("/");
 
-                if( map.containsKey(point))
-                {
-                    myRef.removeValue((DatabaseReference.CompletionListener) myRef.child(map.get(point)));
-                    map.remove(point);
-                }
-                else {
-                    myRef.child("/").push().setValue(point);
-                    map.put(point, myRef.getKey());
-                }
+                myRef.child("/").push().setValue(point);
+                map.put(point, myRef.getKey());
+
             }
             
         });
         /////////////////////////////////////////////////////////////////////////////////////
+
+       /* googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+            @Override
+            public void onMarkerClick(Marker marker){
+
+            }
+        });
+        */
     }
 }
