@@ -139,12 +139,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public boolean onMarkerClick(Marker marker){
+                String fbKey = map.get(marker.getPosition());
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                final DatabaseReference myRef = database.getReference("/" + fbKey);
+                myRef.removeValue();
                 markerMap.remove(marker.getPosition());
                 map.remove(marker.getPosition());
                 marker.remove();
                 return true;
             }
         });
-
     }
 }
