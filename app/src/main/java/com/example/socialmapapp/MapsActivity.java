@@ -135,13 +135,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
         /////////////////////////////////////////////////////////////////////////////////////
 
-       /* googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+       googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 
             @Override
-            public void onMarkerClick(Marker marker){
-
+            public boolean onMarkerClick(Marker marker){
+                markerMap.remove(marker.getPosition());
+                map.remove(marker.getPosition());
+                marker.remove();
+                return true;
             }
         });
-        */
+
     }
 }
