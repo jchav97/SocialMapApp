@@ -3,6 +3,7 @@ package com.example.socialmapapp;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.SyncStatusObserver;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,6 +35,7 @@ import static java.lang.System.exit;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
         // Read from the database
         final HashMap<LatLng,String> map = new HashMap<LatLng,String>();
         final HashMap<LatLng,Marker> markerMap = new HashMap<LatLng,Marker>();
@@ -91,13 +94,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for(DataSnapshot ds : dataSnapshot.getChildren())
                 {
 
-                   LatLng location = new LatLng(ds.child("latitude").getValue(double.class), ds.child("longitude").getValue(double.class));
+                   //LatLng location = new LatLng(ds.child("latitude").getValue(double.class), ds.child("longitude").getValue(double.class));
+                    LocationMarker location;
+                    location = ds.getValue(LocationMarker.class);
+                    LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+                    map.put(position,ds.getKey());
 
-                   map.put(location,ds.getKey());
-
-                   Marker markerName = mMap.addMarker(new MarkerOptions().position(location).title(myRef.getKey()));
-
-                   markerMap.put(location,markerName);
+                   Marker markerName = mMap.addMarker(new MarkerOptions().position(position).title(myRef.getKey()));
+                   markerMap.put(position,markerName);
                 }
             }
 
@@ -126,12 +130,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("/");
-
-                myRef.child("/").push().setValue(point);
+                double latitude = point.latitude;
+                double longitude = point.longitude;
+                LocationMarker location = new LocationMarker(latitude, longitude,"temp 1", "temp 2", "temp 3");
+                myRef.child("/").push().setValue(location);
+                mMap.addMarker(new MarkerOptions().position(point).title("temp"));
                 map.put(point, myRef.getKey());
 
             }
-            
+
         });
         /////////////////////////////////////////////////////////////////////////////////////
 
