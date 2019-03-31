@@ -3,10 +3,12 @@ package com.example.socialmapapp;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Intent;
 import android.content.SyncStatusObserver;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
 
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -35,6 +37,8 @@ import static java.lang.System.exit;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private EditText mEditTextDescription;
+    private EditText mEditTextTitle;
 
 
     @Override
@@ -128,12 +132,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onMapClick(LatLng point) {
 
+                Intent intent = new Intent(MapsActivity.this, MarkerPage.class);
+                intent.putExtra("latitude",point.latitude);
+                intent.putExtra("longitude", point.longitude);
+                startActivity(intent);
+
+                /*
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("/");
                 double latitude = point.latitude;
                 double longitude = point.longitude;
                 LocationMarker location = new LocationMarker(latitude, longitude,"temp 1", "temp 2", "temp 3");
                 myRef.child("/").push().setValue(location);
+                */
                 mMap.addMarker(new MarkerOptions().position(point).title("temp"));
                 map.put(point, myRef.getKey());
 
