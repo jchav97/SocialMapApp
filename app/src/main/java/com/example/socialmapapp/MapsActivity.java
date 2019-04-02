@@ -135,7 +135,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Intent intent = new Intent(MapsActivity.this, MarkerPage.class);
                 intent.putExtra("latitude",point.latitude);
                 intent.putExtra("longitude", point.longitude);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
 
                 /*
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -167,5 +167,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return true;
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode ==1)
+        {
+            if(resultCode == RESULT_OK) {
+                String title = data.getStringExtra("title");
+                String description = data.getStringExtra("description");
+
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("/");
+                double latitude = data.getDoubleExtra("latitude",0);
+                double longitude = data.getDoubleExtra("longitude", 0);
+                LocationMarker location = new LocationMarker(latitude, longitude,title, description, "temp 3");
+                myRef.child("/").push().setValue(location);
+            }
+
+        }
     }
 }
