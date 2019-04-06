@@ -37,9 +37,8 @@ import static java.lang.System.exit;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private EditText mEditTextDescription;
-    private EditText mEditTextTitle;
-
+    final HashMap<LatLng,String> map = new HashMap<LatLng,String>();
+    final HashMap<LatLng,Marker> markerMap = new HashMap<LatLng,Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         // Read from the database
-        final HashMap<LatLng,String> map = new HashMap<LatLng,String>();
-        final HashMap<LatLng,Marker> markerMap = new HashMap<LatLng,Marker>();
+
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("/");
@@ -145,8 +143,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LocationMarker location = new LocationMarker(latitude, longitude,"temp 1", "temp 2", "temp 3");
                 myRef.child("/").push().setValue(location);
                 */
-                mMap.addMarker(new MarkerOptions().position(point).title("temp"));
-                map.put(point, myRef.getKey());
 
             }
 
@@ -183,8 +179,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 DatabaseReference myRef = database.getReference("/");
                 double latitude = data.getDoubleExtra("latitude",0);
                 double longitude = data.getDoubleExtra("longitude", 0);
+                LatLng point = new LatLng(latitude, longitude);
                 LocationMarker location = new LocationMarker(latitude, longitude,title, description, "temp 3");
                 myRef.child("/").push().setValue(location);
+                mMap.addMarker(new MarkerOptions().position(point).title("temp"));
+                map.put(point, myRef.getKey());
+
             }
 
         }

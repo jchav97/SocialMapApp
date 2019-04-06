@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:padding="16dp"
+    tools:context=".MarkerPage">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/title"
+        android:text="Title"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/stored_title"
+        android:textSize="24sp"
+        android:text="test1"
+
+
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/description"
+        android:text="Description"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/stored_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="test2"
+        android:textSize="24sp"
+
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Marker"
+        android:id="@+id/button_save_marker"
+        />
+
+</LinearLayout>
