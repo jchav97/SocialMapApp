@@ -135,15 +135,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 intent.putExtra("longitude", point.longitude);
                 startActivityForResult(intent, 1);
 
-                /*
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("/");
-                double latitude = point.latitude;
-                double longitude = point.longitude;
-                LocationMarker location = new LocationMarker(latitude, longitude,"temp 1", "temp 2", "temp 3");
-                myRef.child("/").push().setValue(location);
-                */
-
             }
 
         });
@@ -154,13 +145,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onMarkerClick(Marker marker){
                 String fbKey = map.get(marker.getPosition());
+
+                Intent intent = new Intent(MapsActivity.this, markerClick.class);
+                intent.putExtra("fbKey", fbKey);
+                intent.putExtra("latitude",marker.getPosition().latitude);
+                intent.putExtra("longitude", marker.getPosition().longitude);
+
+                startActivityForResult(intent, 2);
+
+                /*
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 final DatabaseReference myRef = database.getReference("/" + fbKey);
+
+
                 myRef.removeValue();
                 markerMap.remove(marker.getPosition());
                 map.remove(marker.getPosition());
                 marker.remove();
+                */
+
                 return true;
+
             }
         });
     }
@@ -184,9 +189,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 myRef.child("/").push().setValue(location);
                 mMap.addMarker(new MarkerOptions().position(point).title("temp"));
                 map.put(point, myRef.getKey());
+                myRef.child("/" + database.getReference().getKey() + "/dbKey").setValue(database.getReference().getKey());
 
             }
 
+        }
+        if(requestCode == 2){
+            if(resultCode == RESULT_OK){
+                String fbKey = data.getStringExtra("fbKey");
+                LatLng position = new LatLng(data.getDoubleExtra("latitude",0), data.getDoubleExtra("longitude",0));
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                final DatabaseReference myRef = database.getReference("/" + fbKey);
+
+
+                myRef.removeValue();
+                markerMap.remove(position);
+                map.remove(position);
+                
+            }
         }
     }
 }

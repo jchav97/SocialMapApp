@@ -48,10 +48,10 @@
         />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save Marker"
-        android:id="@+id/button_save_marker"
+        android:id="@+id/delete_marker_button"
+        android:text="Delete marker?"
         />
 
 </LinearLayout>
